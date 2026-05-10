@@ -1,0 +1,53 @@
+{
+  "name": "vscode-ashare-watch",
+  "displayName": "A-Share Watch",
+  "publisher": "ashare-watch",
+  "description": "Track A-Share stock prices in VS Code Status Bar",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "A-Share Watch",
+      "properties": {
+        "ashare-watch.stocks": {
+          "type": "array",
+          "default": [
+            "sh600519",
+            "sz000001"
+          ],
+          "description": "List of stock codes to track (e.g., sh600519, sz000001)"
+        },
+        "ashare-watch.updateInterval": {
+          "type": "number",
+          "default": 5000,
+          "description": "Update interval in milliseconds"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "eslint": "^9.18.0",
+    "typescript": "^5.7.3"
+  }
+}
