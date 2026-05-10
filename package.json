@@ -15,6 +15,21 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "ashare-watch.stockPanel",
+          "name": "自选股管理"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ashare-watch.refresh",
+        "title": "A-Share Watch: 刷新行情"
+      }
+    ],
     "configuration": {
       "title": "A-Share Watch",
       "properties": {
