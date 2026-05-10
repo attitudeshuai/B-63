@@ -32,7 +32,31 @@
           "description": "Update interval in milliseconds"
         }
       }
-    }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ashare-watch",
+          "title": "A-Share Watch",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ashare-watch": [
+        {
+          "type": "webview",
+          "id": "ashare-watch.stockPanel",
+          "name": "Stock Management"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ashare-watch.manageStocks",
+        "title": "A-Share Watch: Manage Stocks"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

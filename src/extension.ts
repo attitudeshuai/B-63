@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 import { StockService } from './stockService';
 import { StockStatusBar } from './statusBar';
+import { StockPanelProvider } from './stockPanel';
 
 let timer: NodeJS.Timeout | undefined;
+let stockPanelProvider: StockPanelProvider | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('A-Share Watch is now active!');
 
     const stockService = new StockService();
     const statusBar = new StockStatusBar();
+    stockPanelProvider = new StockPanelProvider(context);
 
     const fetchAndDisplay = async () => {
         const config = vscode.workspace.getConfiguration('ashare-watch');
@@ -22,34 +25,43 @@ export function activate(context: vscode.ExtensionContext) {
         }
     };
 
-    // Initial fetch
     fetchAndDisplay();
 
-    // Set up polling
     const config = vscode.workspace.getConfiguration('ashare-watch');
     const interval = config.get<number>('updateInterval', 5000);
     
-    // Refresh command
     const refreshCommand = vscode.commands.registerCommand('ashare-watch.refresh', () => {
         fetchAndDisplay();
         vscode.window.showInformationMessage('A-Share View Refreshed');
     });
 
-    // Start timer
+    const manageStocksCommand = vscode.commands.registerCommand('ashare-watch.manageStocks', () => {
+        vscode.commands.executeCommand('workbench.view.extension.ashare-watch');
+    });
+
     startTimer(interval, fetchAndDisplay);
 
-    // Watch for config changes
+    const stockPanelView = vscode.window.registerWebviewViewProvider(
+        StockPanelProvider.viewType,
+        stockPanelProvider
+    );
+
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
         if (e.affectsConfiguration('ashare-watch')) {
             const newConfig = vscode.workspace.getConfiguration('ashare-watch');
             const newInterval = newConfig.get<number>('updateInterval', 5000);
             startTimer(newInterval, fetchAndDisplay);
             fetchAndDisplay();
+            if (stockPanelProvider) {
+                stockPanelProvider.refresh();
+            }
         }
     }));
 
     context.subscriptions.push(statusBar);
     context.subscriptions.push(refreshCommand);
+    context.subscriptions.push(manageStocksCommand);
+    context.subscriptions.push(stockPanelView);
 }
 
 function startTimer(interval: number, callback: () => void) {
