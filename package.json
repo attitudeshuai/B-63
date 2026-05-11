@@ -11,7 +11,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onView:stockManagerView"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -32,7 +33,31 @@
           "description": "Update interval in milliseconds"
         }
       }
-    }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "stockManager",
+          "title": "股票管理",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "stockManager": [
+        {
+          "type": "webview",
+          "id": "stockManagerView",
+          "name": "自选股管理"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ashare-watch.refresh",
+        "title": "刷新股票数据"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
