@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { StockService } from './stockService';
 import { StockStatusBar } from './statusBar';
+import { StockPanelProvider } from './stockPanelProvider';
 
 let timer: NodeJS.Timeout | undefined;
 
@@ -22,23 +23,18 @@ export function activate(context: vscode.ExtensionContext) {
         }
     };
 
-    // Initial fetch
     fetchAndDisplay();
 
-    // Set up polling
     const config = vscode.workspace.getConfiguration('ashare-watch');
     const interval = config.get<number>('updateInterval', 5000);
     
-    // Refresh command
     const refreshCommand = vscode.commands.registerCommand('ashare-watch.refresh', () => {
         fetchAndDisplay();
         vscode.window.showInformationMessage('A-Share View Refreshed');
     });
 
-    // Start timer
     startTimer(interval, fetchAndDisplay);
 
-    // Watch for config changes
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
         if (e.affectsConfiguration('ashare-watch')) {
             const newConfig = vscode.workspace.getConfiguration('ashare-watch');
@@ -47,6 +43,11 @@ export function activate(context: vscode.ExtensionContext) {
             fetchAndDisplay();
         }
     }));
+
+    const panelProvider = new StockPanelProvider(context.extensionUri);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(StockPanelProvider.viewType, panelProvider)
+    );
 
     context.subscriptions.push(statusBar);
     context.subscriptions.push(refreshCommand);
